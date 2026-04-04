@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   ArrowUpRight,
   BrainCircuit,
@@ -127,10 +127,13 @@ function SignalRibbon({
 }
 
 export default function SimulatePage() {
-  const initialDemoMode =
-    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1"
-  const [isDemoMode] = useState(initialDemoMode)
-  const [idea, setIdea] = useState(initialDemoMode ? DEMO_IDEA : "")
+  const router = useRouter()
+  const [isDemoMode, setIsDemoMode] = useState(
+    () => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1"
+  )
+  const [idea, setIdea] = useState(() =>
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1" ? DEMO_IDEA : ""
+  )
   const [status, setStatus] = useState<SimulationStatus>("ready")
   const [statusMessage, setStatusMessage] = useState("")
   const [simulationId, setSimulationId] = useState<string | null>(null)
@@ -155,6 +158,7 @@ export default function SimulatePage() {
   })
 
   const abortRef = useRef<AbortController | null>(null)
+  const scorePanelRef = useRef<HTMLDivElement | null>(null)
 
   const currentPhase = useMemo(() => {
     if (status === "failed") return "Run interrupted"
@@ -164,6 +168,11 @@ export default function SimulatePage() {
     if (strategy) return "Strategy shaping"
     return status === "running" ? "Initializing session" : "Awaiting idea"
   }, [personaRounds.length, status, strategy, supervisorRounds.length, validationScore])
+
+  useEffect(() => {
+    if (validationScore === null || !panels.panel5) return
+    scorePanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }, [panels.panel5, validationScore])
 
   function reveal(key: PanelKey) {
     setPanels((prev) => ({ ...prev, [key]: true }))
@@ -353,6 +362,37 @@ export default function SimulatePage() {
     })
   }
 
+  function switchMode(nextMode: "live" | "demo") {
+    abortRef.current?.abort()
+    abortRef.current = null
+    const nextIsDemoMode = nextMode === "demo"
+    setIsDemoMode(nextIsDemoMode)
+    setIdea(nextIsDemoMode ? DEMO_IDEA : "")
+    setStatus("ready")
+    setStatusMessage("")
+    setError(null)
+    setStrategy(null)
+    setPersonaRounds([])
+    setSupervisorRounds([])
+    setValidationScore(null)
+    setAdoptionRate(null)
+    setBuyerReadinessScore(null)
+    setGtmClarityScore(null)
+    setVentureUpsideSignal(null)
+    setScoreSummary(null)
+    setFailureReason(null)
+    setRoundsCompleted(0)
+    setSimulationId(null)
+    setPanels({
+      panel1: true,
+      panel2: false,
+      panel3: false,
+      panel4: false,
+      panel5: false,
+    })
+    router.push(nextIsDemoMode ? "/simulate?demo=1" : "/simulate")
+  }
+
   return (
     <main className="relative min-h-screen overflow-hidden pb-24">
       <div className="pointer-events-none absolute inset-0 app-shell-grid opacity-45" />
@@ -370,7 +410,7 @@ export default function SimulatePage() {
                   <div className="metal-label inline-flex rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-[0.32em] text-[#f1d6a0]/74">
                     Synthetic buyer pressure-testing
                   </div>
-                  <h1 className="mt-5 max-w-3xl text-4xl leading-[0.95] text-[#f4efe4] sm:text-5xl">
+                  <h1 className="mt-5 max-w-3xl text-4xl leading-[1.02] text-[#f4efe4] sm:text-5xl">
                     Shape the wedge, survive the buyers, and watch the signal move for a reason.
                   </h1>
                   <p className="mt-5 max-w-2xl text-[15px] leading-8 text-white/56">
@@ -445,8 +485,9 @@ export default function SimulatePage() {
                 <div className="rounded-[28px] border border-white/8 bg-white/[0.03] p-5">
                   <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#f1d6a0]/42">Run mode</p>
                   <div className="mt-4 space-y-3">
-                    <Link
-                      href="/simulate"
+                    <button
+                      type="button"
+                      onClick={() => switchMode("live")}
                       className={`block rounded-[20px] border px-4 py-3 text-sm transition-colors ${
                         !isDemoMode
                           ? "border-[#f1d6a0]/24 bg-[#f1d6a0]/8 text-[#f8e7c6]"
@@ -454,9 +495,10 @@ export default function SimulatePage() {
                       }`}
                     >
                       Live run
-                    </Link>
-                    <Link
-                      href="/simulate?demo=1"
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => switchMode("demo")}
                       className={`block rounded-[20px] border px-4 py-3 text-sm transition-colors ${
                         isDemoMode
                           ? "border-[#86b8c7]/26 bg-[#86b8c7]/10 text-[#d2eef5]"
@@ -464,7 +506,7 @@ export default function SimulatePage() {
                       }`}
                     >
                       Demo mode
-                    </Link>
+                    </button>
                   </div>
                   <p className="mt-4 text-sm leading-7 text-white/46">
                     {isDemoMode
@@ -505,19 +547,21 @@ export default function SimulatePage() {
                     Reset
                   </button>
                   {!isDemoMode ? (
-                    <Link
-                      href="/simulate?demo=1"
+                    <button
+                      type="button"
+                      onClick={() => switchMode("demo")}
                       className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/34 transition-colors hover:text-white/60"
                     >
                       Try demo mode
-                    </Link>
+                    </button>
                   ) : (
-                    <Link
-                      href="/simulate"
+                    <button
+                      type="button"
+                      onClick={() => switchMode("live")}
                       className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/34 transition-colors hover:text-white/60"
                     >
                       Switch to live mode
-                    </Link>
+                    </button>
                   )}
                 </div>
 
@@ -594,31 +638,33 @@ export default function SimulatePage() {
             )}
           </DashboardPanel>
 
-          <DashboardPanel panelNumber={5} title="Signal Readout" tag="SCORE_OUT" visible={panels.panel5} className="rounded-[34px] p-7">
-            {validationScore !== null &&
-            adoptionRate !== null &&
-            buyerReadinessScore !== null &&
-            gtmClarityScore !== null &&
-            ventureUpsideSignal !== null &&
-            scoreSummary ? (
-              <ScoreDisplay
-                validationScore={validationScore}
-                adoptionRate={adoptionRate}
-                buyerReadinessScore={buyerReadinessScore}
-                gtmClarityScore={gtmClarityScore}
-                ventureUpsideSignal={ventureUpsideSignal}
-                scoreSummary={scoreSummary}
-                roundsCompleted={roundsCompleted}
-                failureReason={failureReason}
-              />
-            ) : (
-              <div data-testid="score-loading" className="space-y-3">
-                <div className="h-2 w-full rounded bg-white/10" />
-                <div className="h-2 w-3/4 rounded shimmer" />
-                <div className="h-2 w-1/2 rounded shimmer" />
-              </div>
-            )}
-          </DashboardPanel>
+          <div ref={scorePanelRef}>
+            <DashboardPanel panelNumber={5} title="Signal Readout" tag="SCORE_OUT" visible={panels.panel5} className="rounded-[34px] p-7">
+              {validationScore !== null &&
+              adoptionRate !== null &&
+              buyerReadinessScore !== null &&
+              gtmClarityScore !== null &&
+              ventureUpsideSignal !== null &&
+              scoreSummary ? (
+                <ScoreDisplay
+                  validationScore={validationScore}
+                  adoptionRate={adoptionRate}
+                  buyerReadinessScore={buyerReadinessScore}
+                  gtmClarityScore={gtmClarityScore}
+                  ventureUpsideSignal={ventureUpsideSignal}
+                  scoreSummary={scoreSummary}
+                  roundsCompleted={roundsCompleted}
+                  failureReason={failureReason}
+                />
+              ) : (
+                <div data-testid="score-loading" className="space-y-3">
+                  <div className="h-2 w-full rounded bg-white/10" />
+                  <div className="h-2 w-3/4 rounded shimmer" />
+                  <div className="h-2 w-1/2 rounded shimmer" />
+                </div>
+              )}
+            </DashboardPanel>
+          </div>
         </div>
 
         <aside className="lg:sticky lg:top-28 lg:h-fit">
@@ -631,6 +677,21 @@ export default function SimulatePage() {
                 </span>
               </div>
               <div className="relative z-10 mt-5 flex flex-col gap-4">
+                {validationScore !== null ? (
+                  <div className="rounded-[22px] border border-[#f1d6a0]/16 bg-[#f1d6a0]/8 p-4">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#f1d6a0]/52">Validation signal</p>
+                    <div className="mt-3 flex items-end justify-between gap-3">
+                      <p className="text-3xl font-light text-[#f7ebd3]">{Math.round(validationScore * 100)}%</p>
+                      <button
+                        type="button"
+                        onClick={() => scorePanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                        className="text-xs uppercase tracking-[0.22em] text-[#f1d6a0]/72 transition-colors hover:text-[#f7ebd3]"
+                      >
+                        View score
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
                 {RUN_STEPS.map((step) => {
                   const Icon = step.icon
                   const state = stepState(step.key, panels, status)
