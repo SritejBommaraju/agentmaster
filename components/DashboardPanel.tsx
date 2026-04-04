@@ -25,22 +25,25 @@ export function DashboardPanel({
     <div
       data-testid={`panel-${panelNumber}`}
       className={cn(
-        "rounded-2xl border border-white/7 bg-[#1e1e1e] p-6 fade-in-up",
+        "section-frame glass-panel fade-in-up rounded-[32px] p-6 sm:p-7",
         className
       )}
     >
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-white text-sm font-medium">{title}</h2>
-        <span className="font-mono text-[10px] tracking-widest text-white/30 uppercase">
+      <div className="relative z-10 mb-5 flex items-start justify-between gap-4">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.34em] text-[#f1d6a0]/52">Panel {panelNumber}</p>
+          <h2 className="mt-2 text-[1.55rem] leading-none text-[#f4efe4]">{title}</h2>
+        </div>
+        <span className="metal-label rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.26em] text-[#f1d6a0]/74">
           {tag}
         </span>
       </div>
-      <div className="text-white/60 text-sm">
+      <div className="relative z-10 text-sm text-white/60">
         {children ?? (
           <div className="space-y-2">
-            <div className="h-2 rounded bg-white/10 w-full" />
-            <div className="h-2 rounded bg-white/10 w-3/4" />
-            <div className="h-2 rounded bg-white/10 w-1/2" />
+            <div className="h-2 w-full rounded bg-white/10" />
+            <div className="h-2 w-3/4 rounded bg-white/10" />
+            <div className="h-2 w-1/2 rounded bg-white/10" />
           </div>
         )}
       </div>

@@ -16,38 +16,34 @@ export function Navbar() {
   return (
     <nav
       data-testid="navbar"
-      className="fixed left-1/2 top-6 z-50 flex w-[min(94vw,820px)] -translate-x-1/2 items-center justify-between rounded-full border border-white/7 bg-[#161616]/90 px-4 py-3 backdrop-blur-md sm:px-6"
+      className="glass-panel fixed left-1/2 top-5 z-50 flex w-[min(95vw,980px)] -translate-x-1/2 items-center justify-between rounded-full px-4 py-3 sm:px-6"
     >
-      <Link href={isSimulate ? "/" : "#top"} className="flex items-center gap-2 text-sm font-medium text-white">
-        <span className="inline-block h-2 w-2 rounded-full bg-white" />
-        ExecuSim
+      <Link href={isSimulate ? "/" : "#top"} className="flex items-center gap-3 text-sm text-[#f4efe4]">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#f1d6a0]/22 bg-white/[0.04] text-[11px] font-medium">
+          E
+        </span>
+        <span className="font-medium">ExecuSim</span>
       </Link>
 
-      <div className="hidden items-center gap-6 text-[14px] text-white/50 sm:flex">
-        {isSimulate ? (
-          <>
-            <Link href="/" className="transition-colors hover:text-white/80">
-              Home
-            </Link>
-            <Link href="/simulate?demo=1" className="transition-colors hover:text-white/80">
-              Demo Mode
-            </Link>
-            <Link href="/simulate" className="transition-colors hover:text-white/80">
-              Live Run
-            </Link>
-          </>
-        ) : (
-          landingLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="transition-colors hover:text-white/80">
+      <div className="hidden items-center gap-7 text-[14px] text-white/50 sm:flex">
+        {isSimulate
+          ? (
+            <>
+              <Link href="/" className="transition-colors hover:text-[#f4efe4]">Home</Link>
+              <Link href="/simulate?demo=1" className="transition-colors hover:text-[#f4efe4]">Demo Mode</Link>
+              <Link href="/simulate" className="transition-colors hover:text-[#f4efe4]">Live Run</Link>
+            </>
+          )
+          : landingLinks.map((link) => (
+            <Link key={link.href} href={link.href} className="transition-colors hover:text-[#f4efe4]">
               {link.label}
             </Link>
-          ))
-        )}
+          ))}
       </div>
 
       <Link
         href={isSimulate ? "/simulate?demo=1" : "/simulate"}
-        className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/72 transition-colors hover:border-white/20 hover:text-white"
+        className="rounded-full border border-[#f1d6a0]/20 bg-[#f1d6a0]/8 px-4 py-2 text-xs uppercase tracking-[0.26em] text-[#f8e7c6] transition-colors hover:border-[#f1d6a0]/35 hover:bg-[#f1d6a0]/14"
       >
         {isSimulate ? "Run Demo" : "Open App"}
       </Link>

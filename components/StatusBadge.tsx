@@ -9,10 +9,17 @@ interface StatusBadgeProps {
 }
 
 const LABELS: Record<SimulationStatus, string> = {
-  ready: "SIMULATION READY_",
-  running: "RUNNING_",
-  complete: "COMPLETE_",
-  failed: "FAILED_",
+  ready: "System Ready",
+  running: "Simulation Live",
+  complete: "Signal Captured",
+  failed: "Needs Attention",
+}
+
+const STYLES: Record<SimulationStatus, string> = {
+  ready: "border-white/12 bg-white/[0.04] text-white/74",
+  running: "border-[#f1d6a0]/30 bg-[#f1d6a0]/10 text-[#f8e7c6]",
+  complete: "border-[#86b8c7]/28 bg-[#86b8c7]/10 text-[#d2eef5]",
+  failed: "border-red-400/20 bg-red-400/8 text-red-200/88",
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
@@ -21,14 +28,18 @@ export function StatusBadge({ status }: StatusBadgeProps) {
       data-testid="status-badge"
       data-status={status}
       className={cn(
-        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full",
-        "border border-white/10 bg-[#1e1e1e]",
-        "font-mono text-[11px] font-medium tracking-widest text-white/70 uppercase"
+        "inline-flex items-center gap-2 rounded-full px-4 py-2",
+        "font-mono text-[11px] font-medium uppercase tracking-[0.28em]",
+        STYLES[status]
       )}
     >
-      {status === "running" && (
-        <span className="w-1.5 h-1.5 rounded-full bg-white pulse-dot" aria-hidden="true" />
-      )}
+      <span
+        className={cn(
+          "h-1.5 w-1.5 rounded-full",
+          status === "running" ? "bg-[#f2d39a] pulse-dot" : status === "complete" ? "bg-[#86b8c7]" : status === "failed" ? "bg-red-300" : "bg-white/50"
+        )}
+        aria-hidden="true"
+      />
       <span>{LABELS[status]}</span>
     </div>
   )

@@ -9,8 +9,11 @@ import {
   Play,
   Radar,
   RotateCcw,
+  ShieldCheck,
+  Sparkles,
   Square,
   Users,
+  Waves,
 } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import { StatusBadge, SimulationStatus } from "@/components/StatusBadge"
@@ -39,10 +42,10 @@ const EXAMPLE_IDEAS = [
 ]
 
 const RUN_STEPS = [
-  { key: "panel2", title: "Strategy", detail: "Define ICP, pricing, messaging", icon: Radar },
-  { key: "panel3", title: "Buyer responses", detail: "Stage-based objections and demand", icon: Users },
-  { key: "panel4", title: "Executive pivot", detail: "Pricing, messaging, or ICP correction", icon: BrainCircuit },
-  { key: "panel5", title: "Validation score", detail: "Weighted signal and next step", icon: CircleDashed },
+  { key: "panel2", title: "Strategy", detail: "Sharper ICP, pricing, and wedge positioning.", icon: Radar },
+  { key: "panel3", title: "Buyer responses", detail: "Embodied buyers surface blockers, trust gaps, and urgency.", icon: Users },
+  { key: "panel4", title: "Executive pivot", detail: "The supervisor rewrites the angle based on structured signals.", icon: BrainCircuit },
+  { key: "panel5", title: "Validation score", detail: "Readiness, GTM clarity, and upside land separately.", icon: CircleDashed },
 ] as const
 
 function parseSSEBuffer(buffer: string): { events: ParsedEvent[]; remainder: string } {
@@ -92,9 +95,33 @@ function StatCard({
   muted?: boolean
 }) {
   return (
-    <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-      <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/28">{label}</p>
-      <p className={`mt-3 text-sm leading-6 ${muted ? "text-white/46" : "text-white/76"}`}>{value}</p>
+    <div className="rounded-[26px] border border-[#f1d6a0]/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] p-4 shadow-[0_18px_38px_rgba(0,0,0,0.18)]">
+      <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#f1d6a0]/42">{label}</p>
+      <p className={`mt-3 text-sm leading-6 ${muted ? "text-white/42" : "text-[#f4efe4]"}`}>{value}</p>
+    </div>
+  )
+}
+
+function SignalRibbon({
+  icon: Icon,
+  title,
+  body,
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  title: string
+  body: string
+}) {
+  return (
+    <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#f1d6a0]/18 bg-[#f1d6a0]/8 text-[#f1d6a0]">
+          <Icon className="h-4 w-4" />
+        </div>
+        <div>
+          <p className="text-sm text-[#f4efe4]">{title}</p>
+          <p className="mt-1 text-sm leading-6 text-white/46">{body}</p>
+        </div>
+      </div>
     </div>
   )
 }
@@ -327,121 +354,129 @@ export default function SimulatePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#111111] pb-24">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_10%,rgba(255,255,255,0.07),transparent_28%),radial-gradient(circle_at_88%_8%,rgba(255,255,255,0.05),transparent_22%)]" />
+    <main className="relative min-h-screen overflow-hidden pb-24">
+      <div className="pointer-events-none absolute inset-0 app-shell-grid opacity-35" />
+      <div className="pointer-events-none absolute left-[-8%] top-[18%] h-[420px] w-[420px] rounded-full bg-[#86b8c7]/8 blur-[120px]" />
+      <div className="pointer-events-none absolute right-[-10%] top-[6%] h-[520px] w-[520px] rounded-full bg-[#e4b36a]/8 blur-[150px]" />
       <Navbar />
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 pb-16 pt-28 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-10">
-        <div className="flex flex-col gap-5">
-          <section className="rounded-[30px] border border-white/8 bg-[#171717] p-6 sm:p-7">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-2xl">
-                <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-white/28">
-                  Market Simulation Workspace
-                </p>
-                <h1 className="mt-4 text-3xl font-normal tracking-[-0.04em] text-white sm:text-4xl">
-                  Pressure-test the idea before you pressure-test the market.
-                </h1>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-white/56 sm:text-[15px]">
-                  This workspace turns one line of intent into a visible decision loop:
-                  strategy, buyer pushback, executive revision, and a weighted signal.
-                </p>
-              </div>
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 pb-16 pt-28 lg:grid-cols-[minmax(0,1fr)_330px] lg:px-10">
+        <div className="flex flex-col gap-6">
+          <section className="section-frame glass-panel rounded-[36px] p-6 sm:p-8">
+            <div className="relative z-10 flex flex-col gap-8">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                <div className="max-w-3xl">
+                  <div className="metal-label inline-flex rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-[0.32em] text-[#f1d6a0]/74">
+                    Synthetic buyer pressure-testing
+                  </div>
+                  <h1 className="mt-5 max-w-3xl text-4xl leading-[0.95] text-[#f4efe4] sm:text-5xl">
+                    Shape the wedge, survive the buyers, and watch the signal move for a reason.
+                  </h1>
+                  <p className="mt-5 max-w-2xl text-[15px] leading-8 text-white/56">
+                    ExecuSim turns a rough B2B idea into a visibly staged decision loop:
+                    strategy framing, buyer pushback, supervisor correction, and scored market signal.
+                  </p>
+                </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <StatusBadge status={status} />
-                <div className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-white/58">
-                  {isDemoMode ? "Demo session" : "Live session"}
+                <div className="flex flex-wrap items-center gap-3 lg:self-center">
+                  <StatusBadge status={status} />
+                  <div className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-white/58">
+                    {isDemoMode ? "Demo session" : "Live session"}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-7 grid gap-3 sm:grid-cols-3">
-              <StatCard label="Current phase" value={currentPhase} />
-              <StatCard
-                label="Session"
-                value={simulationId ? simulationId.slice(0, 8).toUpperCase() : "Not started"}
-                muted={!simulationId}
-              />
-              <StatCard
-                label="Rounds completed"
-                value={`${roundsCompleted} / 3`}
-                muted={roundsCompleted === 0}
-              />
-            </div>
-
-            {statusMessage && (
-              <div className="mt-5 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3">
-                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/34">Live status</p>
-                <p className="mt-2 text-sm text-white/72">{statusMessage}</p>
+              <div className="grid gap-3 md:grid-cols-3">
+                <StatCard label="Current phase" value={currentPhase} />
+                <StatCard
+                  label="Session"
+                  value={simulationId ? simulationId.slice(0, 8).toUpperCase() : "Not started"}
+                  muted={!simulationId}
+                />
+                <StatCard label="Rounds completed" value={`${roundsCompleted} / 3`} muted={roundsCompleted === 0} />
               </div>
-            )}
 
-            {error && (
-              <div
-                data-testid="error-message"
-                className="mt-5 rounded-2xl border border-red-500/20 bg-red-500/6 px-4 py-4"
-              >
-                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-red-400/60">Run issue</p>
-                <p className="mt-2 text-sm leading-7 text-red-300/88">{error}</p>
+              <div className="grid gap-3 lg:grid-cols-3">
+                <SignalRibbon icon={Sparkles} title="Embodied buyers" body="Profiles, constraints, and typed objections instead of shallow personas." />
+                <SignalRibbon icon={ShieldCheck} title="Trust-aware scoring" body="Readiness, clarity, and upside are visible as separate signals." />
+                <SignalRibbon icon={Waves} title="Visible motion" body="Every round is legible: pushback, pivot, and score movement." />
               </div>
-            )}
+
+              {statusMessage ? (
+                <div className="rounded-[26px] border border-[#f1d6a0]/14 bg-[#f1d6a0]/7 px-5 py-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#f1d6a0]/56">Live status</p>
+                  <p className="mt-2 text-sm leading-7 text-[#f7ebd3]">{statusMessage}</p>
+                </div>
+              ) : null}
+
+              {error ? (
+                <div
+                  data-testid="error-message"
+                  className="rounded-[26px] border border-red-500/20 bg-red-500/6 px-5 py-5"
+                >
+                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-red-300/60">Run issue</p>
+                  <p className="mt-2 text-sm leading-8 text-red-200/88">{error}</p>
+                </div>
+              ) : null}
+            </div>
           </section>
 
-          <DashboardPanel panelNumber={1} title="Your Idea" tag="INPUT_" visible={panels.panel1} className="rounded-[30px] p-7">
+          <DashboardPanel panelNumber={1} title="Idea Intake" tag="INPUT_" visible={panels.panel1} className="rounded-[34px] p-7">
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_220px]">
-                <div className="rounded-[24px] border border-white/8 bg-[#141414] p-4">
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_260px]">
+                <div className="rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] p-5">
                   <div className="flex items-center justify-between">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/30">Idea brief</p>
-                    <span className="text-xs text-white/30">{idea.length} chars</span>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#f1d6a0]/42">Idea brief</p>
+                    <span className="rounded-full border border-white/8 px-2.5 py-1 text-[11px] text-white/34">
+                      {idea.length} chars
+                    </span>
                   </div>
                   <textarea
                     data-testid="idea-input"
                     value={idea}
                     onChange={(e) => setIdea(e.target.value)}
                     placeholder="Describe your B2B idea in one sentence..."
-                    className="mt-3 min-h-[132px] w-full resize-none bg-transparent text-[17px] leading-8 text-white placeholder:text-white/22 focus:outline-none"
+                    className="mt-4 min-h-[152px] w-full resize-none bg-transparent text-[18px] leading-8 text-[#f4efe4] placeholder:text-white/22 focus:outline-none"
                     disabled={status === "running"}
                   />
                 </div>
 
-                <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/30">Run mode</p>
+                <div className="rounded-[28px] border border-white/8 bg-white/[0.03] p-5">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#f1d6a0]/42">Run mode</p>
                   <div className="mt-4 space-y-3">
                     <Link
                       href="/simulate"
-                      className={`block rounded-2xl border px-4 py-3 text-sm transition-colors ${
+                      className={`block rounded-[20px] border px-4 py-3 text-sm transition-colors ${
                         !isDemoMode
-                          ? "border-white/18 bg-white/[0.06] text-white"
-                          : "border-white/8 bg-[#141414] text-white/56 hover:text-white/80"
+                          ? "border-[#f1d6a0]/24 bg-[#f1d6a0]/8 text-[#f8e7c6]"
+                          : "border-white/8 bg-[#141a23] text-white/56 hover:text-white/80"
                       }`}
                     >
                       Live run
                     </Link>
                     <Link
                       href="/simulate?demo=1"
-                      className={`block rounded-2xl border px-4 py-3 text-sm transition-colors ${
+                      className={`block rounded-[20px] border px-4 py-3 text-sm transition-colors ${
                         isDemoMode
-                          ? "border-white/18 bg-white/[0.06] text-white"
-                          : "border-white/8 bg-[#141414] text-white/56 hover:text-white/80"
+                          ? "border-[#86b8c7]/26 bg-[#86b8c7]/10 text-[#d2eef5]"
+                          : "border-white/8 bg-[#141a23] text-white/56 hover:text-white/80"
                       }`}
                     >
                       Demo mode
                     </Link>
                   </div>
-                  <p className="mt-4 text-sm leading-6 text-white/46">
+                  <p className="mt-4 text-sm leading-7 text-white/46">
                     {isDemoMode
-                      ? "Uses the pre-cached showcase scenario. No live LLM call required."
-                      : "Uses your current env keys and streams the simulation in real time."}
+                      ? "Uses the prebuilt showcase scenario for clean panel progression."
+                      : "Uses your live env keys and streams the run back into the workspace."}
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/30">Suggested prompts</p>
-                  <p className="text-xs text-white/34">Use one of these to get a cleaner first run.</p>
+              <div className="rounded-[28px] border border-white/8 bg-white/[0.03] p-5">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#f1d6a0]/42">Suggested prompts</p>
+                  <p className="text-xs text-white/34">Use one as a starting wedge, then sharpen from there.</p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {EXAMPLE_IDEAS.map((example) => (
@@ -449,7 +484,7 @@ export default function SimulatePage() {
                       key={example}
                       type="button"
                       onClick={() => setIdea(example)}
-                      className="rounded-full border border-white/10 bg-[#141414] px-4 py-2 text-sm text-white/62 transition-colors hover:border-white/18 hover:text-white"
+                      className="rounded-full border border-white/10 bg-[#141a23] px-4 py-2 text-sm text-white/62 transition-colors hover:border-[#f1d6a0]/20 hover:bg-[#f1d6a0]/7 hover:text-[#f8e7c6]"
                       disabled={status === "running"}
                     >
                       {example}
@@ -486,21 +521,21 @@ export default function SimulatePage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  {status === "running" && !isDemoMode && (
+                  {status === "running" && !isDemoMode ? (
                     <button
                       type="button"
                       onClick={handleAbort}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#141414] px-4 py-3 text-sm text-white/66 transition-colors hover:border-white/18 hover:text-white"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#141a23] px-4 py-3 text-sm text-white/66 transition-colors hover:border-white/18 hover:text-white"
                     >
                       <Square className="h-4 w-4" />
                       Stop Run
                     </button>
-                  )}
+                  ) : null}
                   <button
                     type="submit"
                     data-testid="submit-button"
                     disabled={!idea.trim() || status === "running"}
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition-colors hover:bg-white/92 disabled:cursor-not-allowed disabled:opacity-35"
+                    className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(90deg,#f0d7a8,#dba45f)] px-5 py-3 text-sm font-medium text-[#1a1208] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-35"
                   >
                     {isDemoMode ? <Play className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
                     {status === "running" ? "Simulation running..." : isDemoMode ? "Run Demo" : "Run Simulation"}
@@ -510,7 +545,7 @@ export default function SimulatePage() {
             </form>
           </DashboardPanel>
 
-          <DashboardPanel panelNumber={2} title="Strategy" tag="STRATEGY_AGT" visible={panels.panel2} className="rounded-[30px] p-7">
+          <DashboardPanel panelNumber={2} title="Strategy Frame" tag="STRATEGY_AGT" visible={panels.panel2} className="rounded-[34px] p-7">
             {strategy ? (
               <StrategyDisplay strategy={strategy} />
             ) : (
@@ -522,17 +557,17 @@ export default function SimulatePage() {
             )}
           </DashboardPanel>
 
-          <DashboardPanel panelNumber={3} title="Market Responses" tag="PERSONA_GRID" visible={panels.panel3} className="rounded-[30px] p-7">
+          <DashboardPanel panelNumber={3} title="Market Responses" tag="PERSONA_GRID" visible={panels.panel3} className="rounded-[34px] p-7">
             {personaRounds.length > 0 ? (
               <div className="flex flex-col gap-7">
-                {personaRounds.map((round, i) => (
+                {personaRounds.map((round, index) => (
                   <div key={round.roundNumber}>
-                    {personaRounds.length > 1 && i > 0 && <div className="mb-6 border-t border-white/7" />}
-                    {personaRounds.length > 1 && (
-                      <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.26em] text-white/34">
+                    {personaRounds.length > 1 && index > 0 ? <div className="mb-6 border-t border-white/7" /> : null}
+                    {personaRounds.length > 1 ? (
+                      <div className="metal-label mb-4 inline-flex rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.26em] text-[#f1d6a0]/70">
                         Round {round.roundNumber}
                       </div>
-                    )}
+                    ) : null}
                     <PersonaGrid personas={round.personas} />
                   </div>
                 ))}
@@ -546,7 +581,7 @@ export default function SimulatePage() {
             )}
           </DashboardPanel>
 
-          <DashboardPanel panelNumber={4} title="Executive Decision" tag="EXEC_SUPV" visible={panels.panel4} className="rounded-[30px] p-7">
+          <DashboardPanel panelNumber={4} title="Executive Decision" tag="EXEC_SUPV" visible={panels.panel4} className="rounded-[34px] p-7">
             {supervisorRounds.length > 0 ? (
               <SupervisorDisplay rounds={supervisorRounds} />
             ) : (
@@ -558,7 +593,7 @@ export default function SimulatePage() {
             )}
           </DashboardPanel>
 
-          <DashboardPanel panelNumber={5} title="Validation Score" tag="SCORE_OUT" visible={panels.panel5} className="rounded-[30px] p-7">
+          <DashboardPanel panelNumber={5} title="Signal Readout" tag="SCORE_OUT" visible={panels.panel5} className="rounded-[34px] p-7">
             {validationScore !== null &&
             adoptionRate !== null &&
             buyerReadinessScore !== null &&
@@ -587,32 +622,34 @@ export default function SimulatePage() {
 
         <aside className="lg:sticky lg:top-28 lg:h-fit">
           <div className="flex flex-col gap-5">
-            <section className="rounded-[28px] border border-white/8 bg-[#171717] p-5">
-              <div className="flex items-center justify-between">
-                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/30">Run progress</p>
+            <section className="section-frame glass-panel rounded-[30px] p-5">
+              <div className="relative z-10 flex items-center justify-between">
+                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#f1d6a0]/42">Run progress</p>
                 <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] text-white/48">
                   {status === "ready" ? "Idle" : status === "running" ? "Active" : status}
                 </span>
               </div>
-              <div className="mt-5 flex flex-col gap-4">
+              <div className="relative z-10 mt-5 flex flex-col gap-4">
                 {RUN_STEPS.map((step) => {
                   const Icon = step.icon
                   const state = stepState(step.key, panels, status)
                   return (
-                    <div key={step.key} className="flex items-start gap-3">
+                    <div key={step.key} className="flex items-start gap-3 rounded-[20px] border border-white/6 bg-white/[0.02] p-3">
                       <div
-                        className={`mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border ${
+                        className={`mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl border ${
                           state === "complete"
-                            ? "border-white/18 bg-white/[0.08] text-white"
+                            ? "border-[#86b8c7]/26 bg-[#86b8c7]/10 text-[#d2eef5]"
                             : state === "active"
-                            ? "border-white/18 bg-white/[0.06] text-white"
-                            : "border-white/8 bg-[#141414] text-white/38"
+                            ? "border-[#f1d6a0]/24 bg-[#f1d6a0]/10 text-[#f8e7c6]"
+                            : "border-white/8 bg-[#141a23] text-white/38"
                         }`}
                       >
                         <Icon className="h-4 w-4" />
                       </div>
                       <div>
-                        <p className={`text-sm ${state === "idle" ? "text-white/44" : "text-white/84"}`}>{step.title}</p>
+                        <p className={`${state === "idle" ? "text-white/44" : "text-[#f4efe4]"} text-sm`}>
+                          {step.title}
+                        </p>
                         <p className="mt-1 text-sm leading-6 text-white/42">{step.detail}</p>
                       </div>
                     </div>
@@ -621,20 +658,22 @@ export default function SimulatePage() {
               </div>
             </section>
 
-            <section className="rounded-[28px] border border-white/8 bg-[#171717] p-5">
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/30">Operator notes</p>
-              <div className="mt-4 space-y-4">
-                <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-                  <p className="text-sm text-white">Best demo path</p>
-                  <p className="mt-2 text-sm leading-6 text-white/48">
-                    Use demo mode when you want reliable panel progression for a pitch or recording.
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-                  <p className="text-sm text-white">Best live path</p>
-                  <p className="mt-2 text-sm leading-6 text-white/48">
-                    Keep inputs B2B and decision-maker oriented. The prompts are tuned for software buyers, not consumer ideas.
-                  </p>
+            <section className="section-frame glass-panel rounded-[30px] p-5">
+              <div className="relative z-10">
+                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#f1d6a0]/42">Operator notes</p>
+                <div className="mt-4 space-y-4">
+                  <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+                    <p className="text-sm text-[#f4efe4]">Best demo path</p>
+                    <p className="mt-2 text-sm leading-7 text-white/48">
+                      Use demo mode when you want reliable progression and a controlled narrative for a pitch or recording.
+                    </p>
+                  </div>
+                  <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+                    <p className="text-sm text-[#f4efe4]">Best live path</p>
+                    <p className="mt-2 text-sm leading-7 text-white/48">
+                      Keep inputs B2B and wedge-shaped. The stronger the target segment, the better the buyer realism.
+                    </p>
+                  </div>
                 </div>
               </div>
             </section>

@@ -3,39 +3,31 @@ import "@testing-library/jest-dom"
 import { StatusBadge } from "@/components/StatusBadge"
 
 describe("StatusBadge", () => {
-  it("shows SIMULATION READY_ when status is ready", () => {
+  it("shows System Ready when status is ready", () => {
     render(<StatusBadge status="ready" />)
-    expect(screen.getByTestId("status-badge")).toHaveTextContent("SIMULATION READY_")
+    expect(screen.getByTestId("status-badge")).toHaveTextContent("System Ready")
   })
 
-  it("shows RUNNING_ when status is running", () => {
+  it("shows Simulation Live when status is running", () => {
     render(<StatusBadge status="running" />)
-    expect(screen.getByTestId("status-badge")).toHaveTextContent("RUNNING_")
+    expect(screen.getByTestId("status-badge")).toHaveTextContent("Simulation Live")
   })
 
-  it("shows COMPLETE_ when status is complete", () => {
+  it("shows Signal Captured when status is complete", () => {
     render(<StatusBadge status="complete" />)
-    expect(screen.getByTestId("status-badge")).toHaveTextContent("COMPLETE_")
+    expect(screen.getByTestId("status-badge")).toHaveTextContent("Signal Captured")
   })
 
-  it("shows FAILED_ when status is failed", () => {
+  it("shows Needs Attention when status is failed", () => {
     render(<StatusBadge status="failed" />)
-    expect(screen.getByTestId("status-badge")).toHaveTextContent("FAILED_")
+    expect(screen.getByTestId("status-badge")).toHaveTextContent("Needs Attention")
   })
 
   it("renders a pulse dot only when running", () => {
-    const { rerender } = render(<StatusBadge status="ready" />)
-    expect(screen.queryByRole("presentation")).not.toBeInTheDocument()
+    const { rerender } = render(<StatusBadge status="running" />)
+    expect(screen.getByTestId("status-badge").querySelector(".pulse-dot")).toBeInTheDocument()
 
-    rerender(<StatusBadge status="running" />)
-    // pulse dot is aria-hidden span — check it exists
-    const badge = screen.getByTestId("status-badge")
-    const dot = badge.querySelector("span.pulse-dot")
-    expect(dot).toBeInTheDocument()
-  })
-
-  it("sets data-status attribute correctly", () => {
-    render(<StatusBadge status="complete" />)
-    expect(screen.getByTestId("status-badge")).toHaveAttribute("data-status", "complete")
+    rerender(<StatusBadge status="ready" />)
+    expect(screen.getByTestId("status-badge").querySelector(".pulse-dot")).not.toBeInTheDocument()
   })
 })

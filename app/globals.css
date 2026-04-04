@@ -1,14 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --bg-base: #111111;
-  --bg-card: #1e1e1e;
-  --bg-card-hover: #2a2a2a;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --text-muted: #555555;
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-active: rgba(255, 255, 255, 0.15);
+  --bg-base: #0d1117;
+  --bg-elevated: #121821;
+  --bg-card: rgba(16, 22, 31, 0.82);
+  --bg-card-strong: rgba(20, 27, 38, 0.92);
+  --bg-soft: rgba(255, 255, 255, 0.04);
+  --text-primary: #f4efe4;
+  --text-secondary: rgba(244, 239, 228, 0.76);
+  --text-muted: rgba(244, 239, 228, 0.38);
+  --border-subtle: rgba(233, 214, 177, 0.12);
+  --border-active: rgba(233, 214, 177, 0.24);
+  --accent: #e4b36a;
+  --accent-strong: #f2d39a;
+  --accent-cool: #86b8c7;
+  --shadow-soft: 0 18px 70px rgba(0, 0, 0, 0.34);
 }
 
 @theme inline {
@@ -16,46 +22,91 @@
   --color-foreground: var(--text-primary);
 }
 
-body {
-  background: var(--bg-base);
-  color: var(--text-primary);
-  font-family: Inter, system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
 html {
   scroll-behavior: smooth;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(134, 184, 199, 0.16), transparent 24%),
+    radial-gradient(circle at 82% 10%, rgba(228, 179, 106, 0.13), transparent 26%),
+    linear-gradient(180deg, #0f141c 0%, #0b1017 56%, #0c1219 100%);
+}
+
+body {
+  background: transparent;
+  color: var(--text-primary);
+  font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.03em;
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(228, 179, 106, 0.22);
   color: white;
+}
+
+.app-shell-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.75), transparent);
+}
+
+.glass-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(18px);
+}
+
+.section-frame {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(228, 179, 106, 0.1), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(134, 184, 199, 0.1), transparent 30%);
+  pointer-events: none;
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-10px); }
+  50% { transform: translateY(-10px); }
 }
 
-.float-strategy { animation: float 6s ease-in-out 0s infinite; }
-.float-early    { animation: float 7s ease-in-out 1.2s infinite; }
-.float-growth   { animation: float 6.5s ease-in-out 2.5s infinite; }
-.float-midmkt   { animation: float 8s ease-in-out 0.8s infinite; }
-.float-supv     { animation: float 7.5s ease-in-out 1.8s infinite; }
-.float-score    { animation: float 6s ease-in-out 3s infinite; }
+.float-strategy { animation: float 4.8s ease-in-out 0s infinite; }
+.float-growth { animation: float 4.9s ease-in-out 0.45s infinite; }
+.float-early { animation: float 5.1s ease-in-out 0.9s infinite; }
+.float-midmkt { animation: float 5.2s ease-in-out 1.2s infinite; }
+.float-supv { animation: float 5s ease-in-out 1.65s infinite; }
+.float-score { animation: float 4.8s ease-in-out 2s infinite; }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .fade-in-up {
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: fadeInUp 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
 }
 
 .pulse-dot {
@@ -63,17 +114,22 @@ html {
 }
 
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
+  0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255,255,255,0.04) 0%,
-    rgba(255,255,255,0.10) 50%,
-    rgba(255,255,255,0.04) 100%
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(228, 179, 106, 0.16) 50%,
+    rgba(255, 255, 255, 0.03) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 2s ease-in-out infinite;
+  animation: shimmer 2.2s ease-in-out infinite;
+}
+
+.metal-label {
+  background: linear-gradient(90deg, rgba(228, 179, 106, 0.14), rgba(134, 184, 199, 0.1));
+  border: 1px solid rgba(228, 179, 106, 0.14);
 }

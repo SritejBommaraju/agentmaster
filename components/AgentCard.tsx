@@ -22,7 +22,7 @@ export function AgentCard({
   className,
 }: AgentCardProps) {
   return (
-    <div className={cn("flex flex-col items-center gap-2", floatClass, className)}>
+    <div className={cn("flex flex-col items-center gap-2.5", floatClass, className)}>
       <div
         data-testid="agent-card"
         className={cn(
@@ -55,7 +55,8 @@ export function AgentCard({
       </div>
       <span
         data-testid="agent-label"
-        className="font-mono text-[10px] font-medium tracking-widest text-white/40 uppercase"
+        className="font-mono text-[10px] font-medium leading-none tracking-widest text-white/40 uppercase"
+        style={{ textShadow: "0 0 10px rgba(13,17,23,0.95), 0 0 18px rgba(13,17,23,0.95)" }}
       >
         {label}
       </span>
