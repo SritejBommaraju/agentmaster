@@ -1,4 +1,5 @@
-const MINIMAX_API_URL = "https://api.minimax.chat/v1/text/chatcompletion_v2"
+const MINIMAX_API_URL = "https://api.minimax.io/v1/text/chatcompletion_v2"
+const MINIMAX_MODEL = "MiniMax-M2.5"
 
 export interface MinimaxMessage {
   role: "system" | "user" | "assistant"
@@ -26,7 +27,7 @@ export async function callMinimax(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "abab6.5s-chat",
+      model: MINIMAX_MODEL,
       messages,
       temperature: options.temperature ?? 0.7,
       max_tokens: options.max_tokens ?? 1000,
@@ -39,10 +40,23 @@ export async function callMinimax(
   }
 
   const json = await res.json()
-  const content = json?.choices?.[0]?.message?.content
+  const content =
+    json?.choices?.[0]?.message?.content ??
+    json?.reply ??
+    json?.output?.text ??
+    json?.data?.text
+
   if (!content) {
-    throw new Error("MiniMax returned an empty response")
+    const statusCode = json?.base_resp?.status_code
+    const statusMsg = json?.base_resp?.status_msg
+    const diagnostic =
+      statusCode || statusMsg
+        ? `MiniMax returned no content (status ${statusCode ?? "unknown"}: ${statusMsg ?? "no status message"})`
+        : `MiniMax returned no content. Response: ${JSON.stringify(json).slice(0, 400)}`
+
+    throw new Error(diagnostic)
   }
+
   return content
 }
 
