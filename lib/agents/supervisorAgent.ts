@@ -3,22 +3,21 @@ import { PivotDecision, PersonaResponse, Strategy } from "@/lib/types"
 
 const SYSTEM_PROMPT = `You are an AI executive advisor analyzing B2B market simulation data.
 
-Given a business idea, the current go-to-market strategy, simulated responses from 3 buyer personas, and the current round number, decide whether the strategy needs to pivot.
+Given a business idea, the current strategy, simulated responses from 3 buyer personas, and the current round number, decide whether the strategy needs to pivot.
 
 Output a JSON object with:
-- should_pivot: boolean — true if the strategy needs adjustment before another round; false to proceed to scoring
-- pivot_type: one of "pricing" | "messaging" | "icp" | "both" | "none" (use "none" when should_pivot is false)
-- pivot_rationale: 1–2 sentences explaining your decision — be specific about which signals drove it
-- updated_strategy: the revised Strategy object with adjusted fields (return the unchanged strategy if should_pivot is false)
+- should_pivot: boolean
+- pivot_type: one of "pricing" | "messaging" | "icp" | "both" | "none"
+- pivot_rationale: 1-2 short sentences
+- updated_strategy: object with icp, pricing, messaging, hypothesis
 
-Decision rules:
-- If round_number >= 2, always set should_pivot = false — max 3 rounds total, never exceed
-- If at least 2 personas have likelihood >= 0.5, do NOT pivot — signals are already strong
-- If average likelihood < 0.35 AND at least 2 personas share similar objection themes, pivot
-- Focus pivot on the weakest signal: if pricing objections dominate use "pricing", if messaging is confused use "messaging", if wrong ICP use "icp", if both pricing and messaging need work use "both"
-- When pivoting, make a concrete specific adjustment to the strategy — not generic advice
-
-Output JSON only — no explanation, no markdown fences.`
+Rules:
+- If round_number >= 2, set should_pivot to false
+- If should_pivot is false, set pivot_type to "none"
+- Keep pivot_rationale under 220 characters
+- Use plain ASCII characters only
+- Output strict JSON object only
+- No markdown, no commentary, no trailing commas`
 
 export async function runSupervisorAgent(
   idea: string,
@@ -35,11 +34,12 @@ export async function runSupervisorAgent(
     )
     .join("\n")
 
-  const raw = await callMinimax([
-    { role: "system", content: SYSTEM_PROMPT },
-    {
-      role: "user",
-      content: `Idea: ${idea}
+  const raw = await callMinimax(
+    [
+      { role: "system", content: SYSTEM_PROMPT },
+      {
+        role: "user",
+        content: `Idea: ${idea}
 
 Current Strategy:
 - ICP: ${strategy.icp}
@@ -51,8 +51,10 @@ Round ${roundNumber} Persona Responses (avg likelihood: ${avgLikelihood.toFixed(
 ${personaSummary}
 
 round_number: ${roundNumber}`,
-    },
-  ])
+      },
+    ],
+    { temperature: 0.2, max_tokens: 900 }
+  )
 
   const decision = parseLLMJson<PivotDecision>(raw)
 
@@ -65,7 +67,6 @@ round_number: ${roundNumber}`,
     throw new Error("Supervisor agent returned incomplete output")
   }
 
-  // Enforce round cap — never pivot past round 2
   if (roundNumber >= 2) {
     decision.should_pivot = false
     decision.pivot_type = "none"

@@ -30,4 +30,14 @@ describe("parseLLMJson", () => {
   it("throws on invalid JSON", () => {
     expect(() => parseLLMJson("not json at all")).toThrow()
   })
+
+  it("extracts JSON when the model wraps it in extra text", () => {
+    const input = 'Here is the result:\n{"key":"value"}\nDone.'
+    expect(parseLLMJson<{ key: string }>(input)).toEqual({ key: "value" })
+  })
+
+  it("extracts JSON arrays when surrounded by extra text", () => {
+    const input = 'Result:\n[{"key":"value"}]\nThanks.'
+    expect(parseLLMJson<Array<{ key: string }>>(input)).toEqual([{ key: "value" }])
+  })
 })

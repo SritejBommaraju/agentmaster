@@ -11,6 +11,120 @@ export interface MinimaxOptions {
   max_tokens?: number
 }
 
+function stripCodeFencesAndThinking(raw: string): string {
+  return raw
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim()
+}
+
+function extractBalancedJson(raw: string): string | null {
+  const start = raw.search(/[\[{]/)
+  if (start === -1) return null
+
+  const opener = raw[start]
+  const closer = opener === "{" ? "}" : "]"
+  let depth = 0
+  let inString = false
+  let escaped = false
+
+  for (let i = start; i < raw.length; i += 1) {
+    const char = raw[i]
+
+    if (inString) {
+      if (escaped) {
+        escaped = false
+      } else if (char === "\\") {
+        escaped = true
+      } else if (char === "\"") {
+        inString = false
+      }
+      continue
+    }
+
+    if (char === "\"") {
+      inString = true
+      continue
+    }
+
+    if (char === opener) depth += 1
+    if (char === closer) depth -= 1
+
+    if (depth === 0) {
+      return raw.slice(start, i + 1)
+    }
+  }
+
+  return null
+}
+
+function sanitizeJsonLikeString(raw: string): string {
+  let result = ""
+  let inString = false
+  let escaped = false
+
+  for (let i = 0; i < raw.length; i += 1) {
+    const char = raw[i]
+
+    if (inString) {
+      if (escaped) {
+        result += char
+        escaped = false
+        continue
+      }
+
+      if (char === "\\") {
+        result += char
+        escaped = true
+        continue
+      }
+
+      if (char === "\"") {
+        result += char
+        inString = false
+        continue
+      }
+
+      if (char === "\n") {
+        result += "\\n"
+        continue
+      }
+
+      if (char === "\r") {
+        result += "\\r"
+        continue
+      }
+
+      if (char === "\t") {
+        result += "\\t"
+        continue
+      }
+
+      result += char
+      continue
+    }
+
+    if (char === "\"") {
+      inString = true
+      result += char
+      continue
+    }
+
+    result += char
+  }
+
+  return result.replace(/,\s*([}\]])/g, "$1")
+}
+
+function tryParseJson<T>(raw: string): T | null {
+  try {
+    return JSON.parse(raw) as T
+  } catch {
+    return null
+  }
+}
+
 export async function callMinimax(
   messages: MinimaxMessage[],
   options: MinimaxOptions = {}
@@ -62,6 +176,22 @@ export async function callMinimax(
 
 /** Parse JSON from LLM output — strips markdown code fences if present */
 export function parseLLMJson<T>(raw: string): T {
-  const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim()
-  return JSON.parse(stripped) as T
+  const stripped = stripCodeFencesAndThinking(raw)
+  const extracted = extractBalancedJson(stripped)
+
+  const candidates = [
+    stripped,
+    sanitizeJsonLikeString(stripped),
+    extracted,
+    extracted ? sanitizeJsonLikeString(extracted) : null,
+  ].filter((value): value is string => Boolean(value))
+
+  for (const candidate of candidates) {
+    const parsed = tryParseJson<T>(candidate)
+    if (parsed !== null) {
+      return parsed
+    }
+  }
+
+  throw new Error(`Failed to parse LLM JSON. Raw response: ${stripped.slice(0, 500)}`)
 }
