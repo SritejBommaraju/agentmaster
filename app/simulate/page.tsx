@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
   ArrowUpRight,
   BrainCircuit,
@@ -100,8 +100,10 @@ function StatCard({
 }
 
 export default function SimulatePage() {
-  const [isDemoMode, setIsDemoMode] = useState(false)
-  const [idea, setIdea] = useState("")
+  const initialDemoMode =
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1"
+  const [isDemoMode] = useState(initialDemoMode)
+  const [idea, setIdea] = useState(initialDemoMode ? DEMO_IDEA : "")
   const [status, setStatus] = useState<SimulationStatus>("ready")
   const [statusMessage, setStatusMessage] = useState("")
   const [simulationId, setSimulationId] = useState<string | null>(null)
@@ -110,6 +112,10 @@ export default function SimulatePage() {
   const [supervisorRounds, setSupervisorRounds] = useState<SupervisorRound[]>([])
   const [validationScore, setValidationScore] = useState<number | null>(null)
   const [adoptionRate, setAdoptionRate] = useState<number | null>(null)
+  const [buyerReadinessScore, setBuyerReadinessScore] = useState<number | null>(null)
+  const [gtmClarityScore, setGtmClarityScore] = useState<number | null>(null)
+  const [ventureUpsideSignal, setVentureUpsideSignal] = useState<number | null>(null)
+  const [scoreSummary, setScoreSummary] = useState<string | null>(null)
   const [failureReason, setFailureReason] = useState<string | null>(null)
   const [roundsCompleted, setRoundsCompleted] = useState<number>(0)
   const [error, setError] = useState<string | null>(null)
@@ -122,13 +128,6 @@ export default function SimulatePage() {
   })
 
   const abortRef = useRef<AbortController | null>(null)
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const demo = params.get("demo") === "1"
-    setIsDemoMode(demo)
-    if (demo) setIdea(DEMO_IDEA)
-  }, [])
 
   const currentPhase = useMemo(() => {
     if (status === "failed") return "Run interrupted"
@@ -152,6 +151,10 @@ export default function SimulatePage() {
     setSupervisorRounds([])
     setValidationScore(null)
     setAdoptionRate(null)
+    setBuyerReadinessScore(null)
+    setGtmClarityScore(null)
+    setVentureUpsideSignal(null)
+    setScoreSummary(null)
     setFailureReason(null)
     setRoundsCompleted(0)
     setSimulationId(null)
@@ -201,11 +204,15 @@ export default function SimulatePage() {
       case "score":
         setValidationScore((data.validation_score as number) ?? null)
         setAdoptionRate((data.adoption_rate as number) ?? null)
+        setBuyerReadinessScore((data.buyer_readiness_score as number) ?? null)
+        setGtmClarityScore((data.gtm_clarity_score as number) ?? null)
+        setVentureUpsideSignal((data.venture_upside_signal as number) ?? null)
+        setScoreSummary((data.score_summary as string) ?? null)
         setFailureReason((data.failure_reason as string | null) ?? null)
         setRoundsCompleted((data.rounds_completed as number) ?? 0)
         reveal("panel5")
         setStatusMessage("")
-        setStatus(data.failure_reason ? "failed" : "complete")
+        setStatus("complete")
         break
 
       case "error":
@@ -303,6 +310,10 @@ export default function SimulatePage() {
     setSupervisorRounds([])
     setValidationScore(null)
     setAdoptionRate(null)
+    setBuyerReadinessScore(null)
+    setGtmClarityScore(null)
+    setVentureUpsideSignal(null)
+    setScoreSummary(null)
     setFailureReason(null)
     setRoundsCompleted(0)
     setSimulationId(null)
@@ -548,10 +559,19 @@ export default function SimulatePage() {
           </DashboardPanel>
 
           <DashboardPanel panelNumber={5} title="Validation Score" tag="SCORE_OUT" visible={panels.panel5} className="rounded-[30px] p-7">
-            {validationScore !== null && adoptionRate !== null ? (
+            {validationScore !== null &&
+            adoptionRate !== null &&
+            buyerReadinessScore !== null &&
+            gtmClarityScore !== null &&
+            ventureUpsideSignal !== null &&
+            scoreSummary ? (
               <ScoreDisplay
                 validationScore={validationScore}
                 adoptionRate={adoptionRate}
+                buyerReadinessScore={buyerReadinessScore}
+                gtmClarityScore={gtmClarityScore}
+                ventureUpsideSignal={ventureUpsideSignal}
+                scoreSummary={scoreSummary}
                 roundsCompleted={roundsCompleted}
                 failureReason={failureReason}
               />

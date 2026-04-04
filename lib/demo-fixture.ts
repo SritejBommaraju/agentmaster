@@ -1,145 +1,244 @@
-import { Strategy, PersonaResponse, PivotDecision } from "@/lib/types"
+import { PersonaResponse, PivotDecision, Strategy } from "@/lib/types"
 import { computeScore } from "@/lib/scoring"
 
 export const DEMO_IDEA = "AI compliance automation tool for fintech"
 
-// ─── Round 1 ─────────────────────────────────────────────────────────────────
-
 const demoStrategy: Strategy = {
-  icp: "Mid-market fintech ops and compliance teams at Series B+ companies (150–400 employees) with dedicated RegOps roles",
-  pricing: "$500/month per seat, annual contract required",
-  messaging: "Automate your compliance workflow — reduce audit prep time by 60%",
+  icp: "Mid-market fintech compliance and risk teams at Series B+ companies with audit pressure",
+  pricing: "$500/month per seat on an annual contract",
+  messaging: "Automate audit prep and compliance evidence without adding headcount.",
   hypothesis:
-    "Fintech companies are spending 15+ hours per week on manual compliance tasks and will pay a premium to automate them",
+    "Regulated fintech teams will pay to reduce manual control evidence work and shorten audit prep.",
 }
 
 const demoRound1: PersonaResponse[] = [
   {
     persona: "stage_early",
+    buyer_profile: {
+      stage: "stage_early",
+      company_size: "10-20 employees",
+      role: "Founder",
+      decision_authority: "owner",
+      budget_tolerance: "tight",
+      current_stack: ["Notion", "Slack", "Google Drive"],
+      procurement_friction: "Low process but every tool competes with core hiring budget.",
+      success_metrics: ["hours saved per week", "investor confidence", "faster audit prep"],
+      switching_resistance: "Will switch fast if setup is simple and ROI is visible immediately.",
+      trust_requirements: ["basic security clarity", "clear data handling"],
+      buying_triggers: ["upcoming diligence", "manual spreadsheet pain"],
+      top_risks: ["price too high", "unclear implementation"],
+      language_style: "direct",
+    },
+    evaluation_summary: "Interested in the outcome, but the price and trust posture feel early.",
     interest_score: 6,
     objections: [
-      "$500/month is too steep for our team right now — we'd need a starter tier or free trial",
-      "Are you SOC 2 compliant? Our investors will ask before we sign anything",
-      "We need it to work out of the box — no lengthy implementation",
+      { text: "Starter budget is too thin for this price.", category: "pricing", severity: "high", blocking: true },
+      { text: "Need confidence this works without setup overhead.", category: "workflow", severity: "medium", blocking: false },
+      { text: "Security posture is still vague for diligence.", category: "trust", severity: "medium", blocking: false },
     ],
-    likelihood: 0.45,
-    willingness_to_pay: "$99–$199/month with a free trial",
+    likelihood: 0.44,
+    willingness_to_pay: "$149-$249/month with a trial",
+    trust_signal: "medium",
+    procurement_intensity: "low",
   },
   {
     persona: "stage_growth",
+    buyer_profile: {
+      stage: "stage_growth",
+      company_size: "40-120 employees",
+      role: "Head of Compliance Operations",
+      decision_authority: "approver",
+      budget_tolerance: "managed",
+      current_stack: ["Vanta", "Jira", "Slack", "Google Workspace"],
+      procurement_friction: "Needs a clear ROI case and integration proof before purchase.",
+      success_metrics: ["audit prep hours saved", "control completion rate", "fewer manual reviews"],
+      switching_resistance: "Moderate because the current workflow is annoying but familiar.",
+      trust_requirements: ["SOC 2 readiness", "audit trail visibility", "role permissions"],
+      buying_triggers: ["upcoming audit", "team bandwidth pressure"],
+      top_risks: ["weak integration proof", "soft ROI story"],
+      language_style: "analytical",
+    },
+    evaluation_summary: "The concept fits the team, but the pitch still sounds generic and under-validated.",
     interest_score: 5,
     objections: [
-      "The ROI story isn't tight enough — I need a number I can take to my CFO",
-      "How does this integrate with our existing compliance stack? We use Vanta and Drata",
-      "What does implementation actually look like — how long until we see value?",
+      { text: "ROI claim needs harder numbers for finance approval.", category: "roi", severity: "high", blocking: true },
+      { text: "Must integrate with Vanta and Jira cleanly.", category: "integration", severity: "high", blocking: true },
+      { text: "Need clearer trust evidence for compliance workflows.", category: "trust", severity: "medium", blocking: false },
     ],
-    likelihood: 0.38,
-    willingness_to_pay: "$300–$400/month once integration is confirmed",
+    likelihood: 0.39,
+    willingness_to_pay: "$400-$700/month after integration proof",
+    trust_signal: "medium",
+    procurement_intensity: "medium",
   },
   {
     persona: "stage_mid_market",
+    buyer_profile: {
+      stage: "stage_mid_market",
+      company_size: "180-350 employees",
+      role: "Director of GRC",
+      decision_authority: "committee",
+      budget_tolerance: "flexible",
+      current_stack: ["Drata", "Jira", "Okta", "Slack"],
+      procurement_friction: "Security review, legal review, and reference checks are mandatory.",
+      success_metrics: ["audit readiness", "control evidence coverage", "vendor risk reduction"],
+      switching_resistance: "High because the current process is painful but politically stable.",
+      trust_requirements: ["SOC 2 evidence", "reference customers", "clear onboarding plan"],
+      buying_triggers: ["annual control review", "new customer security demands"],
+      top_risks: ["vendor risk", "slow rollout", "lack of references"],
+      language_style: "procurement",
+    },
+    evaluation_summary: "The pain is real, but the offer lacks the trust and proof needed to survive procurement.",
     interest_score: 3,
     objections: [
-      "We can't start a conversation without SOC 2 Type II — legal will block it immediately",
-      "Who are your reference customers at our scale? We need to talk to someone like us",
-      "Our procurement process takes 90 days minimum — do you support enterprise contracts?",
-      "Implementation risk is high — show me your onboarding track record",
+      { text: "Reference customers at our scale are missing.", category: "trust", severity: "high", blocking: true },
+      { text: "Security review will stall without stronger evidence.", category: "security", severity: "high", blocking: true },
+      { text: "Procurement will ask for enterprise onboarding details.", category: "procurement", severity: "high", blocking: true },
     ],
-    likelihood: 0.2,
-    willingness_to_pay: "$800–$1,200/month if compliance certifications and references are in place",
+    likelihood: 0.22,
+    willingness_to_pay: "$12k-$20k annual pilot if trusted",
+    trust_signal: "low",
+    procurement_intensity: "high",
   },
 ]
 
-// ─── Pivot ────────────────────────────────────────────────────────────────────
-
 const demoPivot: PivotDecision = {
   should_pivot: true,
-  pivot_type: "messaging",
-  pivot_rationale:
-    "Mid-market is the stated ICP but the pitch doesn't address their actual buying criteria — SOC 2 certification and reference customers. The messaging focuses on efficiency when procurement needs proof of security readiness first. Pivot: lead with compliance certification status, restructure pricing to add a growth tier at $299/month, and anchor messaging in audit-readiness.",
+  pivot_type: "trust",
+  pivot_rationale: "Trust is blocking the deal before pricing. Lead with audit readiness, references, and integration proof.",
   updated_strategy: {
-    icp: "Mid-market fintech compliance directors (150–400 employees) preparing for SOC 2 certification or operating in a regulated environment with manual audit workflows",
-    pricing: "$299/month growth tier (20–100 employees) | $600/month enterprise tier (100+ employees), annual contract",
-    messaging:
-      "SOC 2 ready from day one — automate compliance reporting and cut audit prep from weeks to hours",
+    icp: "Growth and mid-market fintech compliance leaders preparing for audits or security reviews",
+    pricing: "$299/month growth tier and $15k annual mid-market pilot",
+    messaging: "Ship audit-ready compliance evidence fast with integrations your team already uses.",
     hypothesis:
-      "Fintech companies in the 150–400 employee range are actively pursuing SOC 2 Type II and will pay a premium for a tool that ships audit-ready documentation out of the box",
+      "Compliance leaders will move if the offer reduces audit prep and clears trust reviews early.",
   },
+  primary_failure_mode: "Trust and procurement blockers outweigh workflow appeal.",
+  highest_risk_segment: "stage_mid_market",
+  confidence_note: "Clear pain exists, but proof and trust posture must improve first.",
 }
-
-// ─── Round 2 ─────────────────────────────────────────────────────────────────
 
 const demoRound2: PersonaResponse[] = [
   {
     persona: "stage_early",
+    buyer_profile: demoRound1[0].buyer_profile,
+    evaluation_summary: "The growth tier is more plausible, but the founder still wants a low-friction pilot.",
     interest_score: 7,
     objections: [
-      "The $299 growth tier is much more approachable — we could pilot it",
-      "Still need to confirm SOC 2 certification before we sign",
+      { text: "Would still want a monthly pilot option first.", category: "pricing", severity: "medium", blocking: false },
+      { text: "Need quick setup with templates, not services work.", category: "workflow", severity: "medium", blocking: false },
     ],
-    likelihood: 0.6,
-    willingness_to_pay: "$299/month on a monthly contract first",
+    likelihood: 0.61,
+    willingness_to_pay: "$249-$299/month pilot",
+    trust_signal: "medium",
+    procurement_intensity: "low",
   },
   {
     persona: "stage_growth",
-    interest_score: 6,
+    buyer_profile: demoRound1[1].buyer_profile,
+    evaluation_summary: "The revised positioning is sharper and easier to defend internally.",
+    interest_score: 7,
     objections: [
-      "Leading with SOC 2 readiness is more compelling for our compliance team",
-      "Need to validate the integration with our existing Vanta setup before committing",
+      { text: "Still need integration proof with Vanta and Jira.", category: "integration", severity: "medium", blocking: true },
+      { text: "Finance will want one tighter ROI benchmark.", category: "roi", severity: "medium", blocking: false },
     ],
-    likelihood: 0.55,
-    willingness_to_pay: "$400–$600/month once integration is confirmed",
+    likelihood: 0.58,
+    willingness_to_pay: "$600-$900/month after validation",
+    trust_signal: "medium",
+    procurement_intensity: "medium",
   },
   {
     persona: "stage_mid_market",
+    buyer_profile: demoRound1[2].buyer_profile,
+    evaluation_summary: "The trust posture improved enough to start a pilot conversation, but procurement still needs evidence.",
     interest_score: 6,
     objections: [
-      "The SOC 2 angle opens the door — now we can start an internal conversation",
-      "Still need two reference customers at our scale before procurement will move",
+      { text: "Need two credible references before procurement moves.", category: "trust", severity: "high", blocking: true },
+      { text: "Security review package must be ready upfront.", category: "security", severity: "medium", blocking: true },
     ],
-    likelihood: 0.5,
-    willingness_to_pay: "$800/month with a 90-day pilot option",
+    likelihood: 0.49,
+    willingness_to_pay: "$15k annual pilot with references",
+    trust_signal: "medium",
+    procurement_intensity: "high",
   },
 ]
 
-// Supervisor concludes no pivot needed — signals improved enough to score
 const demoPivot2: PivotDecision = {
-  should_pivot: false,
-  pivot_type: "none",
-  pivot_rationale:
-    "Round 2 shows meaningful improvement across all segments after the messaging pivot. Mid-market likelihood more than doubled. Signal is sufficient to compute a validation score.",
-  updated_strategy: demoPivot.updated_strategy,
+  should_pivot: true,
+  pivot_type: "workflow",
+  pivot_rationale: "Signal improved, but the market still needs proof-packaged onboarding and reference-driven trust.",
+  updated_strategy: {
+    icp: "Growth and mid-market fintech compliance teams with an active audit or vendor review in flight",
+    pricing: "$299/month growth tier and $15k annual pilot with onboarding bundle",
+    messaging: "Launch with a trust pack, prebuilt integrations, and evidence templates for the first audit cycle.",
+    hypothesis:
+      "Borderline buyers convert when trust materials and implementation proof are part of the offer.",
+  },
+  primary_failure_mode: "Procurement confidence is improving but not yet resolved.",
+  highest_risk_segment: "stage_mid_market",
+  confidence_note: "Promising if implementation proof closes the remaining blocker.",
+  should_run_round_three: true,
 }
 
-// ─── Score ────────────────────────────────────────────────────────────────────
+const demoRound3: PersonaResponse[] = [
+  {
+    persona: "stage_early",
+    buyer_profile: demoRound1[0].buyer_profile,
+    evaluation_summary: "The offer now feels concrete enough to test immediately.",
+    interest_score: 7,
+    objections: [
+      { text: "Still prefers a month-to-month start.", category: "pricing", severity: "low", blocking: false },
+    ],
+    likelihood: 0.66,
+    willingness_to_pay: "$299/month",
+    trust_signal: "medium",
+    procurement_intensity: "low",
+  },
+  {
+    persona: "stage_growth",
+    buyer_profile: demoRound1[1].buyer_profile,
+    evaluation_summary: "Integration and onboarding proof make the ROI case easier to support.",
+    interest_score: 8,
+    objections: [
+      { text: "Would want a pilot success benchmark in writing.", category: "roi", severity: "low", blocking: false },
+    ],
+    likelihood: 0.67,
+    willingness_to_pay: "$900/month with onboarding",
+    trust_signal: "medium",
+    procurement_intensity: "medium",
+  },
+  {
+    persona: "stage_mid_market",
+    buyer_profile: demoRound1[2].buyer_profile,
+    evaluation_summary: "The trust package and implementation framing reduce the internal risk enough for a pilot.",
+    interest_score: 7,
+    objections: [
+      { text: "Reference diligence still needs to happen.", category: "trust", severity: "medium", blocking: false },
+    ],
+    likelihood: 0.58,
+    willingness_to_pay: "$18k annual pilot",
+    trust_signal: "medium",
+    procurement_intensity: "high",
+  },
+]
 
-// Pre-computed from computeScore(demoRound2) so the demo doesn't need to call the server
-// Round2: early 0.60, growth 0.55, mid 0.50
-// Weights: early 1.0, growth 1.2, mid 1.5 → total 3.7
-// Weighted likelihood = (0.60 + 0.66 + 0.75) / 3.7 = 2.01 / 3.7 = 0.5432
-// All >= 0.5 → adoption_rate = 1.0
-// Score = 0.5432 × 0.6 + 1.0 × 0.4 = 0.7259 → 72%
-const demoScore = computeScore(demoRound2)
-
-// ─── Event sequence ───────────────────────────────────────────────────────────
+const demoScore = computeScore(demoRound3, demoRound2)
 
 export interface DemoEvent {
   event: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any
-  /** Delay in ms BEFORE emitting this event */
+  data: unknown
   delay: number
 }
 
 export function getDemoEvents(): DemoEvent[] {
   return [
-    { event: "start",         data: { simulation_id: "demo-sim-0001" },                                         delay: 400  },
-    { event: "strategy",      data: { strategy: demoStrategy },                                                  delay: 2000 },
-    { event: "round_personas",data: { roundNumber: 1, personas: demoRound1 },                                   delay: 3500 },
-    { event: "supervisor",    data: { roundNumber: 1, pivot: demoPivot },                                        delay: 2000 },
-    { event: "round_personas",data: { roundNumber: 2, personas: demoRound2 },                                   delay: 3500 },
-    { event: "supervisor",    data: { roundNumber: 2, pivot: demoPivot2 },                                       delay: 2000 },
-    { event: "score",         data: { ...demoScore, rounds_completed: 2 },                                      delay: 1200 },
-    { event: "done",          data: {},                                                                           delay: 300  },
+    { event: "start", data: { simulation_id: "demo-sim-0001" }, delay: 400 },
+    { event: "strategy", data: { strategy: demoStrategy }, delay: 1400 },
+    { event: "round_personas", data: { roundNumber: 1, personas: demoRound1 }, delay: 2200 },
+    { event: "supervisor", data: { roundNumber: 1, pivot: demoPivot }, delay: 1200 },
+    { event: "round_personas", data: { roundNumber: 2, personas: demoRound2 }, delay: 2200 },
+    { event: "supervisor", data: { roundNumber: 2, pivot: demoPivot2 }, delay: 1200 },
+    { event: "round_personas", data: { roundNumber: 3, personas: demoRound3 }, delay: 1800 },
+    { event: "score", data: { ...demoScore, rounds_completed: 3 }, delay: 900 },
+    { event: "done", data: {}, delay: 300 },
   ]
 }

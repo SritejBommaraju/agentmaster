@@ -1,5 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import "@testing-library/jest-dom"
+import { TextEncoder } from "util"
+import { ReadableStream } from "stream/web"
 import SimulatePage from "@/app/simulate/page"
 
 const mockStrategy = {
@@ -9,11 +11,30 @@ const mockStrategy = {
   hypothesis: "Teams will pay to reduce compliance work by 80%",
 }
 
-function mockFetchSuccess() {
-  global.fetch = jest.fn().mockResolvedValue({
+function makeSseResponse(events: Array<{ event: string; data: unknown }>) {
+  const encoder = new TextEncoder()
+  const payload = events
+    .map(({ event, data }) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
+    .join("")
+
+  return {
     ok: true,
-    json: async () => ({ simulation_id: "sim-123", strategy: mockStrategy }),
-  }) as jest.Mock
+    body: new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(payload))
+        controller.close()
+      },
+    }),
+  }
+}
+
+function mockFetchSuccess() {
+  global.fetch = jest.fn().mockResolvedValue(
+    makeSseResponse([
+      { event: "start", data: { simulation_id: "sim-123" } },
+      { event: "strategy", data: { strategy: mockStrategy } },
+    ])
+  ) as jest.Mock
 }
 
 function mockFetchFailure(message = "Simulation failed") {
@@ -64,7 +85,7 @@ describe("SimulatePage", () => {
     expect(screen.getByTestId("status-badge")).toHaveAttribute("data-status", "ready")
   })
 
-  it("status changes to running and panel 2 appears immediately after submit", async () => {
+  it("status changes to running and panel 2 appears immediately after submit", () => {
     mockFetchSuccess()
     render(<SimulatePage />)
     fireEvent.change(screen.getByTestId("idea-input"), {
@@ -72,13 +93,11 @@ describe("SimulatePage", () => {
     })
     fireEvent.click(screen.getByTestId("submit-button"))
 
-    // Panel 2 and running status are set synchronously before fetch resolves
     expect(screen.getByTestId("status-badge")).toHaveAttribute("data-status", "running")
     expect(screen.getByTestId("panel-2")).toBeInTheDocument()
   })
 
-  it("disables input while simulation is running", async () => {
-    // Use a never-resolving fetch so we can test the in-progress state
+  it("disables input while simulation is running", () => {
     global.fetch = jest.fn().mockReturnValue(new Promise(() => {})) as jest.Mock
 
     render(<SimulatePage />)
@@ -90,7 +109,7 @@ describe("SimulatePage", () => {
     expect(screen.getByTestId("idea-input")).toBeDisabled()
   })
 
-  it("shows strategy in panel 2 after successful API response", async () => {
+  it("shows strategy in panel 2 after successful SSE events", async () => {
     mockFetchSuccess()
     render(<SimulatePage />)
     fireEvent.change(screen.getByTestId("idea-input"), {

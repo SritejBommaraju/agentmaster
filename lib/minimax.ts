@@ -13,6 +13,8 @@ export interface MinimaxOptions {
 
 function stripCodeFencesAndThinking(raw: string): string {
   return raw
+    .replace(/[\u201C\u201D]/g, "\"")
+    .replace(/[\u2018\u2019]/g, "'")
     .replace(/<think>[\s\S]*?<\/think>/gi, "")
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```$/i, "")

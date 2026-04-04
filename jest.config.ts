@@ -17,6 +17,8 @@ const config: Config = {
     "\\.(jpg|jpeg|png|gif|svg|ico)$": "<rootDir>/__mocks__/fileMock.ts",
   },
   testMatch: ["**/__tests__/**/*.test.tsx", "**/__tests__/**/*.test.ts"],
+  testPathIgnorePatterns: ["<rootDir>/execusim/"],
+  modulePathIgnorePatterns: ["<rootDir>/execusim/"],
   coverageProvider: "v8",
 }
 

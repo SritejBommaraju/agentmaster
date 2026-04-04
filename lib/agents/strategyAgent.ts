@@ -5,11 +5,15 @@ const SYSTEM_PROMPT = `You are a startup strategist specializing in B2B SaaS.
 
 Given an idea, output:
 - icp: the specific business type, company size, and decision-maker role you are targeting
-- pricing: recommended price point and model (per seat, per usage, flat license, etc.)
-- messaging: one-sentence value proposition written for a business buyer, not a consumer
+- pricing: recommended price point and model
+- messaging: one-sentence value proposition written for a business buyer
 - hypothesis: the core assumption that must be true for this business to work
 
-Be specific. Think in terms of org size, industry, and buying committee roles. Output JSON only — no explanation, no markdown, just the raw JSON object.`
+Rules:
+- Narrow broad ideas into a credible first wedge market before evaluation.
+- Think in terms of org size, industry, buying committee roles, trust requirements, and implementation friction.
+- Keep the output specific to B2B software buyers.
+- Output JSON only.`
 
 export async function runStrategyAgent(idea: string): Promise<Strategy> {
   const raw = await callMinimax([
@@ -19,7 +23,6 @@ export async function runStrategyAgent(idea: string): Promise<Strategy> {
 
   const strategy = parseLLMJson<Strategy>(raw)
 
-  // Validate required fields
   if (!strategy.icp || !strategy.pricing || !strategy.messaging || !strategy.hypothesis) {
     throw new Error("Strategy agent returned incomplete output")
   }
