@@ -79,8 +79,9 @@ const productEdges = [
 
 export default function HomePage() {
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#111111]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_34%),radial-gradient(circle_at_85%_18%,rgba(255,255,255,0.05),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_30%)]" />
+    <main className="relative min-h-screen overflow-x-hidden">
+      <div className="pointer-events-none absolute inset-0 app-shell-grid opacity-70" />
+      <div className="pointer-events-none absolute inset-0 page-ambient-overlay" />
       <Navbar />
 
       <section
@@ -94,7 +95,7 @@ export default function HomePage() {
             <div className="space-y-5">
               <h1 className="text-[48px] font-normal leading-[0.98] tracking-[-0.04em] text-white sm:text-[64px] lg:text-[82px]">
                 <span className="block">Simulate.</span>
-                <span className="block text-white/45">Pivot. Validate.</span>
+                <span className="block text-white/45">Pivot. <em>Validate.</em></span>
               </h1>
 
               <p className="max-w-md text-[17px] leading-8 text-white/58 sm:text-[18px]">
@@ -142,7 +143,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="how-it-works" className="relative scroll-mt-28">
+      <section id="how-it-works" className="page-section-blend relative scroll-mt-28">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-12">
           <div className="mb-10 flex max-w-2xl flex-col gap-4">
             <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/28">How It Works</p>
@@ -177,7 +178,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="personas" className="relative scroll-mt-28 border-y border-white/6 bg-white/[0.02]">
+      <section id="personas" className="page-section-blend relative scroll-mt-28 border-y border-white/6">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-12">
           <div className="mb-10 flex max-w-2xl flex-col gap-4">
             <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/28">Personas</p>
@@ -220,7 +221,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="about" className="relative scroll-mt-28">
+      <section id="about" className="page-section-blend relative scroll-mt-28">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
             <div className="rounded-[32px] border border-white/8 bg-[#161616] p-7 sm:p-8">

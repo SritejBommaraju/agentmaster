@@ -355,7 +355,8 @@ export default function SimulatePage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden pb-24">
-      <div className="pointer-events-none absolute inset-0 app-shell-grid opacity-35" />
+      <div className="pointer-events-none absolute inset-0 app-shell-grid opacity-45" />
+      <div className="pointer-events-none absolute inset-0 page-ambient-overlay" />
       <div className="pointer-events-none absolute left-[-8%] top-[18%] h-[420px] w-[420px] rounded-full bg-[#86b8c7]/8 blur-[120px]" />
       <div className="pointer-events-none absolute right-[-10%] top-[6%] h-[520px] w-[520px] rounded-full bg-[#e4b36a]/8 blur-[150px]" />
       <Navbar />

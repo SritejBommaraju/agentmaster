@@ -25,9 +25,10 @@
 html {
   scroll-behavior: smooth;
   background:
-    radial-gradient(circle at 12% 16%, rgba(134, 184, 199, 0.16), transparent 24%),
-    radial-gradient(circle at 82% 10%, rgba(228, 179, 106, 0.13), transparent 26%),
-    linear-gradient(180deg, #0f141c 0%, #0b1017 56%, #0c1219 100%);
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    #0c1018;
+  background-size: 32px 32px, 32px 32px, auto;
 }
 
 body {
@@ -56,7 +57,42 @@ h4 {
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 44px 44px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.75), transparent);
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.82) 24%,
+    rgba(0, 0, 0, 0.68) 48%,
+    rgba(0, 0, 0, 0.48) 72%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.82) 24%,
+    rgba(0, 0, 0, 0.68) 48%,
+    rgba(0, 0, 0, 0.48) 72%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+}
+
+.page-ambient-overlay {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(134, 184, 199, 0.07), transparent),
+    linear-gradient(180deg, rgba(9, 13, 19, 0) 0%, rgba(9, 13, 19, 0.25) 60%, rgba(9, 13, 19, 0.35) 100%);
+}
+
+.page-section-blend {
+  position: relative;
+  overflow: hidden;
+}
+
+.page-section-blend::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 22%, transparent 78%, rgba(255, 255, 255, 0.012));
+  pointer-events: none;
 }
 
 .glass-panel {
@@ -78,8 +114,7 @@ h4 {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at top right, rgba(228, 179, 106, 0.1), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(134, 184, 199, 0.1), transparent 30%);
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(134, 184, 199, 0.06), transparent);
   pointer-events: none;
 }
 
