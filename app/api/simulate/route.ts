@@ -13,7 +13,7 @@ export const maxDuration = 60
 function getInsforge() {
   return createClient({
     baseUrl: process.env.NEXT_PUBLIC_INSFORGE_URL!,
-    anonKey: process.env.NEXT_PUBLIC_INSFORGE_ANON_KEY!,
+    anonKey: process.env.INSFORGE_API_KEY ?? process.env.NEXT_PUBLIC_INSFORGE_ANON_KEY!,
   })
 }
 
@@ -40,7 +40,10 @@ export async function POST(req: NextRequest) {
       }
 
       const updateSimulation = async (id: string, payload: Record<string, unknown>) => {
-        await insforge.database.from("simulations").update(payload).eq("id", id)
+        const { error } = await insforge.database.from("simulations").update(payload).eq("id", id)
+        if (error) {
+          throw new Error(`Failed to update simulation ${id}: ${error.message}`)
+        }
       }
 
       const failWith = async (id: string | null, message: string) => {
@@ -71,7 +74,9 @@ export async function POST(req: NextRequest) {
           .select()
 
         if (insertError || !simRow?.[0]) {
-          send("error", { message: "Failed to create simulation record" })
+          send("error", {
+            message: insertError?.message ?? "Failed to create simulation record",
+          })
           return
         }
 

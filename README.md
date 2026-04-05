@@ -316,6 +316,7 @@ Use [.env.example](./.env.example) as the base:
 ```env
 NEXT_PUBLIC_INSFORGE_URL=https://your-project.region.insforge.app
 NEXT_PUBLIC_INSFORGE_ANON_KEY=your-insforge-anon-key
+INSFORGE_API_KEY=your-server-side-insforge-api-key
 MINIMAX_API_KEY=your-minimax-api-key
 ```
 
@@ -323,6 +324,7 @@ MINIMAX_API_KEY=your-minimax-api-key
 
 - `NEXT_PUBLIC_INSFORGE_URL`: InsForge backend URL
 - `NEXT_PUBLIC_INSFORGE_ANON_KEY`: InsForge anonymous client key
+- `INSFORGE_API_KEY`: server-only InsForge API key for privileged writes from API routes; if omitted, the server falls back to the anonymous key
 - `MINIMAX_API_KEY`: key for the MiniMax chat completion API
 
 ## Local Development

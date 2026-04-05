@@ -6,6 +6,7 @@ Deploy the repository root, not the nested `execusim/` copy.
 
 - `NEXT_PUBLIC_INSFORGE_URL`
 - `NEXT_PUBLIC_INSFORGE_ANON_KEY`
+- `INSFORGE_API_KEY`
 - `MINIMAX_API_KEY`
 
 Use [.env.example](C:\Users\bomma\OneDrive\Desktop\agentmaster\.env.example) as the reference for local and Vercel values.
