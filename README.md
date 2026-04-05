@@ -318,6 +318,7 @@ NEXT_PUBLIC_INSFORGE_URL=https://your-project.region.insforge.app
 NEXT_PUBLIC_INSFORGE_ANON_KEY=your-insforge-anon-key
 INSFORGE_API_KEY=your-server-side-insforge-api-key
 MINIMAX_API_KEY=your-minimax-api-key
+MINIMAX_TIMEOUT_MS=45000
 ```
 
 ### What each variable does
@@ -326,6 +327,7 @@ MINIMAX_API_KEY=your-minimax-api-key
 - `NEXT_PUBLIC_INSFORGE_ANON_KEY`: InsForge anonymous client key
 - `INSFORGE_API_KEY`: server-only InsForge API key for privileged writes from API routes; if omitted, the server falls back to the anonymous key
 - `MINIMAX_API_KEY`: key for the MiniMax chat completion API
+- `MINIMAX_TIMEOUT_MS`: optional per-request timeout for MiniMax calls; defaults to `45000`
 
 ## Local Development
 

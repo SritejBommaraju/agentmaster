@@ -8,7 +8,7 @@ import { PersonaResponse, PivotDecision, ScoreResult, Strategy } from "@/lib/typ
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
-export const maxDuration = 60
+export const maxDuration = 180
 
 function getInsforge() {
   return createClient({

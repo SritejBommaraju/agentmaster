@@ -1,5 +1,6 @@
 const MINIMAX_API_URL = "https://api.minimax.io/v1/text/chatcompletion_v2"
 const MINIMAX_MODEL = "MiniMax-M2.5"
+const DEFAULT_TIMEOUT_MS = 45_000
 
 export interface MinimaxMessage {
   role: "system" | "user" | "assistant"
@@ -136,19 +137,34 @@ export async function callMinimax(
     throw new Error("MINIMAX_API_KEY is not configured. Set it in .env.local")
   }
 
-  const res = await fetch(MINIMAX_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: MINIMAX_MODEL,
-      messages,
-      temperature: options.temperature ?? 0.7,
-      max_tokens: options.max_tokens ?? 1000,
-    }),
-  })
+  const timeoutMs = Number(process.env.MINIMAX_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS)
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), Number.isFinite(timeoutMs) ? timeoutMs : DEFAULT_TIMEOUT_MS)
+
+  let res: Response
+  try {
+    res = await fetch(MINIMAX_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: MINIMAX_MODEL,
+        messages,
+        temperature: options.temperature ?? 0.7,
+        max_tokens: options.max_tokens ?? 1000,
+      }),
+      signal: controller.signal,
+    })
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(`MiniMax request timed out after ${timeoutMs}ms`)
+    }
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
+  }
 
   if (!res.ok) {
     const body = await res.text()
